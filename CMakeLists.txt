@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(honest_profiler)
 
-enable_testing()
+# enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "build")
 
@@ -30,29 +30,29 @@ find_package(JNI REQUIRED)
 include_directories(${JAVA_INCLUDE_PATH})
 include_directories(${JAVA_INCLUDE_PATH2})
 
-if (DEFINED ENV{UNITTEST_INCLUDE_DIRS})
-    message("User has configured " $ENV{UNITTEST_INCLUDE_DIRS} " as the unit test include directory")
-    file(GLOB_RECURSE UNIT_TEST_H $ENV{UNITTEST_INCLUDE_DIRS}/*UnitTest++.h)
-else()
-    if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        find_package(UnitTest++ REQUIRED NO_MODULE)
-        include_directories(${UTPP_INCLUDE_DIRS})
-    else()
-        #Debian/Ubuntu have their own unittest++ pkg-config package
-        pkg_check_modules (unittest++ QUIET unittest++)
-        if (${unittest++_FOUND})
-            message("Found unittest++, version " ${unittest++_VERSION})
-        else()
-            #Upstream has a UnitTest++ pkg-config package
-            pkg_check_modules (unittest++ REQUIRED UnitTest++)
-        endif()
-        include_directories(${unittest++_INCLUDE_DIRS})
-    endif()
-    file(GLOB_RECURSE UNIT_TEST_H ${unittest++_INCLUDE_DIRS}/*UnitTest++.h)
-endif()
+# if (DEFINED ENV{UNITTEST_INCLUDE_DIRS})
+#     message("User has configured " $ENV{UNITTEST_INCLUDE_DIRS} " as the unit test include directory")
+#     file(GLOB_RECURSE UNIT_TEST_H $ENV{UNITTEST_INCLUDE_DIRS}/*UnitTest++.h)
+# else()
+#     if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#         find_package(UnitTest++ REQUIRED NO_MODULE)
+#         include_directories(${UTPP_INCLUDE_DIRS})
+#     else()
+#         #Debian/Ubuntu have their own unittest++ pkg-config package
+#         pkg_check_modules (unittest++ QUIET unittest++)
+#         if (${unittest++_FOUND})
+#             message("Found unittest++, version " ${unittest++_VERSION})
+#         else()
+#             #Upstream has a UnitTest++ pkg-config package
+#             pkg_check_modules (unittest++ REQUIRED UnitTest++)
+#         endif()
+#         include_directories(${unittest++_INCLUDE_DIRS})
+#     endif()
+#     file(GLOB_RECURSE UNIT_TEST_H ${unittest++_INCLUDE_DIRS}/*UnitTest++.h)
+# endif()
 
-get_filename_component(UNIT_TEST_INCL ${UNIT_TEST_H} DIRECTORY)
-include_directories(${UNIT_TEST_INCL})
+# get_filename_component(UNIT_TEST_INCL ${UNIT_TEST_H} DIRECTORY)
+# include_directories(${UNIT_TEST_INCL})
 
 # include of gcc 4.8 headers specifically to work around
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=729933
@@ -84,16 +84,16 @@ set(SOURCE_FILES
     ${SRC}/concurrent_map.h
     ${SRC}/concurrent_map.cpp)
 
-set(TEST_FILES
-    ${SRC_TEST}/fixtures.h
-    ${SRC_TEST}/test_circular_queue.cpp
-    ${SRC_TEST}/test.cpp
-    ${SRC_TEST}/test_log_writer.cpp
-    ${SRC_TEST}/test_agent.cpp
-    ${SRC_TEST}/test.h
-    ${SRC_TEST}/test_profiler_config.cpp
-    ${SRC_TEST}/test_maps.cpp
-    ${SRC_TEST}/test_thread_map.cpp)
+#set(TEST_FILES
+#    ${SRC_TEST}/fixtures.h
+#    ${SRC_TEST}/test_circular_queue.cpp
+#    ${SRC_TEST}/test.cpp
+#    ${SRC_TEST}/test_log_writer.cpp
+#    ${SRC_TEST}/test_agent.cpp
+#    ${SRC_TEST}/test.h
+#    ${SRC_TEST}/test_profiler_config.cpp
+#    ${SRC_TEST}/test_maps.cpp
+#    ${SRC_TEST}/test_thread_map.cpp)
 
 
 ##########################################################
@@ -144,7 +144,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GLOBAL_WARNINGS} ${GLOBAL_COPTS} -pthr
 
 add_library(${OUTPUT} SHARED ${SOURCE_FILES})
 
-if ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD") 
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
     target_link_libraries(${OUTPUT} ${JAVA_JVM_LIBRARY} rt)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     target_link_libraries(${OUTPUT} ${JAVA_JVM_LIBRARY} dl)
@@ -152,18 +152,18 @@ else()
     target_link_libraries(${OUTPUT} ${JAVA_JVM_LIBRARY} dl rt)
 endif()
 
-add_executable(unitTests ${UNIT_TEST_H} ${TEST_FILES})
+# add_executable(unitTests ${UNIT_TEST_H} ${TEST_FILES})
 
-if (DEFINED ENV{UNITTEST_LIBRARIES})
-    message("User has configured " $ENV{UNITTEST_LIBRARIES} " as the unit test libraries")
-    target_link_libraries(unitTests ${OUTPUT} $ENV{UNITTEST_LIBRARIES})
-else()
-    if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        target_link_libraries(unitTests ${OUTPUT} UnitTest++)
-    else()
-        target_link_libraries(unitTests ${OUTPUT} ${unittest++_LIBRARIES})
-    endif()
-endif()
-
-# make test
-add_test(unitTests ${BIN}/unitTests)
+# if (DEFINED ENV{UNITTEST_LIBRARIES})
+#     message("User has configured " $ENV{UNITTEST_LIBRARIES} " as the unit test libraries")
+#     target_link_libraries(unitTests ${OUTPUT} $ENV{UNITTEST_LIBRARIES})
+# else()
+#     if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#         target_link_libraries(unitTests ${OUTPUT} UnitTest++)
+#     else()
+#         target_link_libraries(unitTests ${OUTPUT} ${unittest++_LIBRARIES})
+#     endif()
+# endif()
+#
+# # make test
+# add_test(unitTests ${BIN}/unitTests)
